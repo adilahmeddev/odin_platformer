@@ -1,16 +1,16 @@
 package game
 
-import rl "vendor:raylib"
-import "core:math"
 import "core:fmt"
+import "core:math"
+import rl "vendor:raylib"
 
 player_run: Animation
 
 player_idle: Animation
 
 Tile :: struct {
-	position: 	rl.Vector2,
-	texture: 	rl.Rectangle
+	box:     rl.Rectangle,
+	texture: rl.Rectangle,
 }
 main :: proc() {
 	rl.InitWindow(1280, 720, "My First Game")
@@ -18,15 +18,36 @@ main :: proc() {
 
 	terrain_texture := rl.LoadTexture("terrain.png")
 
-	grass_texture := rl.Rectangle{x=112, y=0, width=16,height=16}
-
-	tile_length := i32(rl.GetScreenWidth()/16);
-
-	tiles : [dynamic]Tile
-	for i in 0..<len(tiles){
-		tiles[i]= Tile{position ={f32(16*f32(i)),f32(rl.GetScreenHeight()-16)}, texture=grass_texture}
+	grass_texture := rl.Rectangle {
+		x      = 112,
+		y      = 0,
+		width  = 16,
+		height = 16,
 	}
 
+	tile_length := i32(rl.GetScreenWidth() / 16)
+
+	tiles: [dynamic]Tile
+	for i in 0 ..< tile_length / 2 {
+		append(
+			&tiles,
+			Tile {
+				box = {f32(16 * f32(i)), f32(rl.GetScreenHeight() - 60), 16, 16},
+				texture = grass_texture,
+			},
+		)
+	}
+	fmt.println(tile_length, tile_length / 2, len(tiles))
+
+	for i in len(tiles) ..< int(tile_length) {
+		append(
+			&tiles,
+			Tile {
+				box = {f32(16 * f32(i)), f32(rl.GetScreenHeight() - 120), 16, 16},
+				texture = grass_texture,
+			},
+		)
+	}
 	player_idle = Animation {
 		texture      = rl.LoadTexture("cat_idle.png"),
 		num_frames   = 2,
@@ -56,10 +77,9 @@ main :: proc() {
 		update_animation(&player.current_anim)
 
 		draw_animation(player.current_anim, player.pos, player.flip)
-		for tile in tiles{
-		
-	rl.DrawTextureRec(terrain_texture, tile.texture,tile.position, rl.GREEN)
-	}
+		for tile in tiles {
+			rl.DrawTextureRec(terrain_texture, tile.texture, {tile.box.x, tile.box.y}, rl.GREEN)
+		}
 		rl.EndDrawing()
 	}
 

@@ -1,4 +1,5 @@
 package game
+import "core:fmt"
 import rl "vendor:raylib"
 
 Animation_Name :: enum {
@@ -39,20 +40,31 @@ handle_input :: proc(p: ^Player) {
 	}
 }
 
-update_player :: proc(p: ^Player, tiles: []Tile) {
+update_player :: proc(p: ^Player, tiles: [dynamic]Tile) {
 	p.vel.y += 2000 * rl.GetFrameTime()
 
 	if p.grounded && rl.IsKeyPressed(.SPACE) {
 		p.vel.y = -600
 		p.grounded = false
 	}
-
+	old_pos := p.pos
 	p.pos += p.vel * rl.GetFrameTime()
+	for tile in tiles {
 
-	if p.pos.y > f32(rl.GetScreenHeight()) - 64 {
-		p.pos.y = f32(rl.GetScreenHeight()) - 64
-		p.grounded = true
+		if p.pos.x > tile.box.x &&
+		   tile.box.x + tile.box.width >= p.pos.x &&
+		   p.pos.y >= f32(tile.box.y) - 64 {
+			p.pos.y = old_pos.y
+			p.grounded = true
+			break
+		}
 	}
+	fmt.printf(
+		"p.y: %v, tile.y: %v,  tile.height: %v\n",
+		p.pos.y,
+		tiles[0].box.y,
+		tiles[0].box.height,
+	)
 }
 
 update_animation :: proc(a: ^Animation) {
