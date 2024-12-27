@@ -51,20 +51,14 @@ update_player :: proc(p: ^Player, tiles: [dynamic]Tile) {
 	p.pos += p.vel * rl.GetFrameTime()
 	for tile in tiles {
 
-		if p.pos.x > tile.box.x &&
-		   tile.box.x + tile.box.width >= p.pos.x &&
-		   p.pos.y >= f32(tile.box.y) - 64 {
+		if (p.pos.x > tile.box.x && tile.box.x + tile.box.width >= p.pos.x + 64) ||
+		   (p.pos.x + 64 >= tile.box.x && p.pos.x <= tile.box.x + tile.box.width) &&
+			   p.pos.y >= f32(tile.box.y) - 64 {
 			p.pos.y = old_pos.y
 			p.grounded = true
 			break
 		}
 	}
-	fmt.printf(
-		"p.y: %v, tile.y: %v,  tile.height: %v\n",
-		p.pos.y,
-		tiles[0].box.y,
-		tiles[0].box.height,
-	)
 }
 
 update_animation :: proc(a: ^Animation) {
