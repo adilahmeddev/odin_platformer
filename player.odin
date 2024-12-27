@@ -1,5 +1,6 @@
 package game
 import "core:fmt"
+import "core:math"
 import rl "vendor:raylib"
 
 Animation_Name :: enum {
@@ -42,22 +43,50 @@ handle_input :: proc(p: ^Player) {
 
 update_player :: proc(p: ^Player, tiles: [dynamic]Tile) {
 	p.vel.y += 2000 * rl.GetFrameTime()
-
 	if p.grounded && rl.IsKeyPressed(.SPACE) {
 		p.vel.y = -600
 		p.grounded = false
 	}
 	old_pos := p.pos
-	p.pos += p.vel * rl.GetFrameTime()
+	frame_time := rl.GetFrameTime()
+	diff_x := p.pos.x + p.vel.x * frame_time
+	p.pos += p.vel * frame_time
 	for tile in tiles {
 
-		if (p.pos.x > tile.box.x && tile.box.x + tile.box.width >= p.pos.x + 64) ||
-		   (p.pos.x + 64 >= tile.box.x && p.pos.x <= tile.box.x + tile.box.width) &&
-			   p.pos.y >= f32(tile.box.y) - 64 {
-			p.pos.y = old_pos.y
-			p.grounded = true
-			break
+		if p.grounded && p.pos.y + 64 > tile.box.y {
+
+			if p.pos.y < tile.box.y &&
+			   p.pos.x + 64 > tile.box.x &&
+			   p.pos.x + 64 < tile.box.x + tile.box.width {
+
+				//fmt.printf("&& p.pos.y + 64[%v] > tile.boy.y[%v] \n", p.pos.y + 64, tile.box.y)
+				//fmt.printf("p.pos.y[%v] <= tile.box.y[%v]\n", p.pos.y, tile.box.y)
+				//fmt.printf("p.pos.x + 64[%v] >= tile.box.x[%v]\n", p.pos.x + 64, tile.box.x)
+				//fmt.printf(
+				//	"p.pos.x + 64[%v] <= tile.box.x[%v] + tile.box.width[%v] [%v]\n",
+				//	p.pos.x + 64,
+				//	tile.box.x,
+				//	tile.box.width,
+				//	tile.box.x + tile.box.width,
+				//)
+				//fmt.println("intersection inner")
+				//fmt.println(p.grounded)
+
+				//fmt.println("<<<")
+
+				fmt.printf("p.pos.x %v -> %v\n", p.pos.x, diff_x)
+				p.pos.x = diff_x
+				//p.pos.x = tile.box.x
+			}
 		}
+
+		if !p.grounded && (p.pos.x > tile.box.x && tile.box.x + tile.box.width >= p.pos.x + 64) ||
+		   (p.pos.x + 64 >= tile.box.x) && p.pos.y >= f32(tile.box.y) - 64 {
+			p.pos.y = tile.box.y - 64
+
+			p.grounded = true
+		}
+
 	}
 }
 

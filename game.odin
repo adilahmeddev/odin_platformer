@@ -15,6 +15,7 @@ Tile :: struct {
 main :: proc() {
 	rl.InitWindow(1280, 720, "My First Game")
 	rl.SetWindowPosition(30, 60)
+	rl.SetTargetFPS(60)
 
 	terrain_texture := rl.LoadTexture("terrain.png")
 
