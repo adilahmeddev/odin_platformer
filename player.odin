@@ -75,7 +75,8 @@ update_player :: proc(p: ^Player, tiles: [dynamic]Tile) {
 				//fmt.println("<<<")
 
 				fmt.printf("p.pos.x %v -> %v\n", p.pos.x, diff_x)
-				p.pos.x = diff_x
+				p.pos.x = tile.box.x - 64
+				break
 				//p.pos.x = tile.box.x
 			}
 		}
@@ -85,6 +86,7 @@ update_player :: proc(p: ^Player, tiles: [dynamic]Tile) {
 			p.pos.y = tile.box.y - 64
 
 			p.grounded = true
+			break
 		}
 
 	}
