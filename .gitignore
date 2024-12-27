@@ -1,3 +1,4 @@
-build/
+!build/
+build/*
 ols.json
 .vscode/
